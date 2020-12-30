@@ -32,10 +32,10 @@ class Post(Base):
     url = Column(String, nullable=False, unique=True)
     title = Column(String, nullable=False)
     picture = Column(String, nullable=True)
-    date = Column(String, nullable=False)
+    date = Column(DateTime, nullable=False)
     author_id = Column(Integer, ForeignKey('author.id'))
     author = relationship(Author, backref=backref('posts', uselist=True))
-    #keywords = relationship('keyword', secondary='post_keyword_link')
+    keywords = relationship('Keyword', secondary='post_keyword_link')
 
     def __init__(self, url, title, picture, date, author):
         self.url = url
@@ -79,16 +79,15 @@ class Comment(Base):
 
     __tablename__ = 'comment'
     id = Column(Integer, autoincrement=True, primary_key=True)
-    author = Column(String, nullable=False)
-    author_url = Column(String, nullable=False)
     text = Column(String)
+    author_id = Column(Integer, ForeignKey('author.id'))
+    author = relationship(Author, backref=backref('comments', uselist=False))
     post_id = Column(Integer, ForeignKey('post.id'))
     post = relationship(Post, backref=backref('posts', uselist=True))
 
-    def __init__(self, author, author_url, text, post):
-        self.author = author
-        self.author_url = author_url
+    def __init__(self, text, author, post):
         self.text = text
+        self.author = author
         self.post = post
 
     def __repr__(self):
